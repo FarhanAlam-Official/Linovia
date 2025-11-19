@@ -33,7 +33,9 @@ export interface CommandFlag {
 export interface Category {
   id: CategoryId;
   name: string;
-  icon: React.ComponentType;
+  // SVG icon components often accept standard SVG props like `className`.
+  // Use React.SVGProps so icon components can receive `className`, `width`, `height`, etc.
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   count: number;
   description: string;
   color: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Layout from '@/components/Layout/Layout';
 import { useAppContext } from '@/lib/context/AppContext';
 import { DifficultyBadge } from '@/components/DifficultyBadge/DifficultyBadge';
@@ -43,57 +43,7 @@ export default function QuizPage() {
     return results;
   }, [selectedCategory, selectedDifficulty]);
 
-  // Timer effect
-  useEffect(() => {
-    if (quizState === 'taking' && currentQuiz?.timeLimit && timeRemaining !== null) {
-      const interval = setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (prev === null || prev <= 1) {
-            handleSubmitQuiz();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [quizState, currentQuiz, timeRemaining]);
-
-  const handleStartQuiz = (quiz: Quiz) => {
-    setCurrentQuiz(quiz);
-    setQuizState('taking');
-    setCurrentQuestionIndex(0);
-    setAnswers({});
-    setScore(null);
-    setStartTime(Date.now());
-    if (quiz.timeLimit) {
-      setTimeRemaining(quiz.timeLimit * 60); // Convert minutes to seconds
-    } else {
-      setTimeRemaining(null);
-    }
-  };
-
-  const handleAnswerChange = (questionId: string, answer: string | string[]) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: answer
-    }));
-  };
-
-  const handleNextQuestion = () => {
-    if (currentQuiz && currentQuestionIndex < currentQuiz.questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    }
-  };
-
-  const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    }
-  };
-
-  const handleSubmitQuiz = () => {
+  const handleSubmitQuiz = useCallback(() => {
     if (!currentQuiz) return;
 
     let correctCount = 0;
@@ -134,6 +84,56 @@ export default function QuizPage() {
           [currentQuiz.id]: percentage
         }
       });
+    }
+  }, [currentQuiz, answers, userPreferences, updatePreferences]);
+
+  // Timer effect
+  useEffect(() => {
+    if (quizState === 'taking' && currentQuiz?.timeLimit && timeRemaining !== null) {
+      const interval = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev === null || prev <= 1) {
+            handleSubmitQuiz();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [quizState, currentQuiz, timeRemaining, handleSubmitQuiz]);
+
+  const handleStartQuiz = (quiz: Quiz) => {
+    setCurrentQuiz(quiz);
+    setQuizState('taking');
+    setCurrentQuestionIndex(0);
+    setAnswers({});
+    setScore(null);
+    setStartTime(Date.now());
+    if (quiz.timeLimit) {
+      setTimeRemaining(quiz.timeLimit * 60); // Convert minutes to seconds
+    } else {
+      setTimeRemaining(null);
+    }
+  };
+
+  const handleAnswerChange = (questionId: string, answer: string | string[]) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: answer
+    }));
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuiz && currentQuestionIndex < currentQuiz.questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
