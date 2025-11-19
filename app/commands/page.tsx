@@ -40,16 +40,17 @@ export default function Commands() {
       keys: [
         { name: 'name', weight: 10.0 }, // Very high weight for exact name matches
         { name: 'description', weight: 0.1 },
-        { name: 'tags', weight: 0.05 },
-        { name: 'category', weight: 0.01 }
+        { name: 'tags', weight: 0.05 }
+        // Removed category to avoid irrelevant matches
       ],
-      threshold: 0.5, // Stricter threshold - require better matches
+      threshold: 0.3, // Even stricter threshold
       includeScore: true,
       minMatchCharLength: 2,
-      // Prioritize exact matches
       findAllMatches: false,
       ignoreLocation: false,
-      shouldSort: true
+      shouldSort: true,
+      // Use extended search for better control
+      useExtendedSearch: false
     });
   }, [commands]);
 
@@ -149,65 +150,63 @@ export default function Commands() {
         const exactMatch = commands.find(cmd => cmd.name.toLowerCase() === queryLower);
         
         if (exactMatch) {
-          // If exact match exists, show ONLY the exact match and commands that start with the query
-          // Don't show commands that just mention the query in examples/descriptions
-          const commandsStartingWithQuery = commands.filter(cmd => {
-            const cmdName = cmd.name.toLowerCase();
-            return cmdName === queryLower || cmdName.startsWith(queryLower);
-          });
-          
-          // Sort: exact match first, then starts-with matches
-          results = commandsStartingWithQuery.sort((a, b) => {
-            const aName = a.name.toLowerCase();
-            const bName = b.name.toLowerCase();
-            
-            // Exact match always first
-            if (aName === queryLower && bName !== queryLower) return -1;
-            if (bName === queryLower && aName !== queryLower) return 1;
-            
-            // Then starts-with matches (alphabetically)
-            return aName.localeCompare(bName);
-          });
+          // If exact match exists, show ONLY the exact match
+          results = [exactMatch];
         } else {
-          // No exact match, use normal search but prioritize name matches
-          const searchResults = fuse.search(searchQuery);
+          // Check for commands that start with the query (prefix match)
+          const prefixMatches = commands.filter(cmd => 
+            cmd.name.toLowerCase().startsWith(queryLower)
+          );
           
-          // Filter out results with poor scores (score > 0.5 means poor match)
-          const goodMatches = searchResults.filter(result => {
-            const score = result.score || 1;
-            // Only include if score is good (lower is better in Fuse.js)
-            // Score of 0.5 or less is a good match
-            return score <= 0.5;
-          });
-          
-          // Sort results to prioritize name matches
-          const sortedResults = goodMatches.sort((a, b) => {
-            const aName = a.item.name.toLowerCase();
-            const bName = b.item.name.toLowerCase();
+          if (prefixMatches.length > 0) {
+            // If we have prefix matches, only show those (sorted alphabetically)
+            results = prefixMatches.sort((a, b) => a.name.localeCompare(b.name));
+          } else {
+            // No exact or prefix match, use Fuse.js but be very strict
+            const searchResults = fuse.search(searchQuery);
             
-            // Starts with query gets highest priority
-            if (aName.startsWith(queryLower) && !bName.startsWith(queryLower)) return -1;
-            if (bName.startsWith(queryLower) && !aName.startsWith(queryLower)) return 1;
-            
-            // Contains query in name gets second priority
-            if (aName.includes(queryLower) && !bName.includes(queryLower)) return -1;
-            if (bName.includes(queryLower) && !aName.includes(queryLower)) return 1;
-            
-            // Then use Fuse.js score
-            return (a.score || 1) - (b.score || 1);
-          });
-          
-          // Remove duplicates and map to commands
-          const seenIds = new Set<string>();
-          results = sortedResults
-            .map(result => result.item)
-            .filter(cmd => {
-              if (seenIds.has(cmd.id)) {
-                return false;
-              }
-              seenIds.add(cmd.id);
-              return true;
+            // Filter to only include results where the query appears in the name or is a very close match
+            const strictMatches = searchResults.filter(result => {
+              const score = result.score || 1;
+              const cmdName = result.item.name.toLowerCase();
+              
+              // Only include if:
+              // 1. Name contains the query (substring match), OR
+              // 2. Score is excellent (< 0.2) and matches name/description
+              const nameContainsQuery = cmdName.includes(queryLower);
+              const excellentScore = score < 0.2;
+              
+              return nameContainsQuery || excellentScore;
             });
+            
+            // Sort results to prioritize name matches
+            const sortedResults = strictMatches.sort((a, b) => {
+              const aName = a.item.name.toLowerCase();
+              const bName = b.item.name.toLowerCase();
+              
+              // Contains query in name gets highest priority
+              const aContains = aName.includes(queryLower);
+              const bContains = bName.includes(queryLower);
+              
+              if (aContains && !bContains) return -1;
+              if (bContains && !aContains) return 1;
+              
+              // Then use Fuse.js score
+              return (a.score || 1) - (b.score || 1);
+            });
+            
+            // Remove duplicates and map to commands
+            const seenIds = new Set<string>();
+            results = sortedResults
+              .map(result => result.item)
+              .filter(cmd => {
+                if (seenIds.has(cmd.id)) {
+                  return false;
+                }
+                seenIds.add(cmd.id);
+                return true;
+              });
+          }
         }
       }
     } else {
@@ -327,18 +326,21 @@ export default function Commands() {
                       ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50'
                       : 'bg-white/10 backdrop-blur-sm text-purple-200 hover:bg-white/20 border border-purple-500/20'
                   }`}
-                  title={naturalLanguageMode ? 'Switch to normal search' : 'Enable natural language search'}
+                  title={naturalLanguageMode ? 'Switch to command search' : 'Enable smart search for questions'}
                 >
                   <Sparkles className={`w-4 h-4 ${naturalLanguageMode ? 'text-white' : 'text-purple-400'}`} />
                   <span className="hidden sm:inline">
-                    {naturalLanguageMode ? 'Natural Language' : 'AI Search'}
+                    {naturalLanguageMode ? 'Smart Search' : 'Smart Search'}
+                  </span>
+                  <span className="sm:hidden">
+                    {naturalLanguageMode ? 'Smart' : 'Smart'}
                   </span>
                 </button>
               </div>
               {naturalLanguageMode && (
                 <div className="flex items-center gap-2 text-sm text-purple-300 bg-purple-500/10 rounded-lg p-3 border border-purple-500/20">
                   <Sparkles className="w-4 h-4 text-purple-400" />
-                  <span>Natural language search is active. Try asking questions like &quot;how to kill a process&quot; or &quot;how to delete a user&quot;</span>
+                  <span>Smart search is active. Ask questions like &quot;how to kill a process&quot; or &quot;find large files&quot;</span>
                 </div>
               )}
             </div>
