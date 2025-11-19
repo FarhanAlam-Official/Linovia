@@ -91,11 +91,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   className="object-contain p-1"
                 />
               </div>
-              <div className="hidden sm:block">
-                <h1 className="text-xl font-bold gradient-text">
+              <div>
+                <h1 className="text-lg sm:text-xl font-bold gradient-text">
                   Linovia
                 </h1>
-                <p className="text-xs text-purple-300 -mt-1 group-hover:text-purple-200 transition-colors">Master Linux Commands</p>
+                <p className="text-[10px] sm:text-xs text-purple-300 -mt-1 group-hover:text-purple-200 transition-colors">Master Linux Commands</p>
               </div>
             </Link>
 
