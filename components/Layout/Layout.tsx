@@ -139,14 +139,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Github className="w-5 h-5" />
               </a>
 
-              {/* Settings */}
-              <button
-                className="p-2 text-purple-300 hover:text-white hover:bg-white/10 rounded-lg transition-all"
-                title="Settings"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
-
               {/* Mobile menu button */}
               <button
                 onClick={toggleMobileMenu}
