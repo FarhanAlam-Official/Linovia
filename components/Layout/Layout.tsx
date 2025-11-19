@@ -2,10 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   Terminal, GraduationCap, Trophy, FileText, Info,
-  Github, Star, Settings, Menu, X 
+  Github, Star, Settings, Menu, X, Instagram, Facebook, Linkedin, Heart 
 } from 'lucide-react';
 
 interface NavigationItem {
@@ -81,8 +82,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 group-hover:from-purple-500 group-hover:to-pink-500 transition-all shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50">
-                <Terminal className="w-6 h-6 text-white" />
+              <div className="relative flex items-center justify-center w-12 h-12 rounded-xl overflow-hidden bg-white/10 group-hover:bg-white/20 transition-all shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50">
+                <Image 
+                  src="/logo.png" 
+                  alt="Linovia Logo" 
+                  width={48} 
+                  height={48}
+                  className="object-contain p-1"
+                />
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-xl font-bold gradient-text">
@@ -123,7 +130,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center gap-3">
               {/* GitHub Link */}
               <a
-                href="https://github.com/linux-commands-pro"
+                href="https://github.com/FarhanAlam-Official"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 text-purple-300 hover:text-white hover:bg-white/10 rounded-lg transition-all"
@@ -194,40 +201,75 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Footer */}
       <footer className="bg-black/40 backdrop-blur-md border-t border-purple-500/20 mt-12">
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid md:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            {/* Brand Section */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 shadow-lg shadow-purple-500/30">
-                  <Terminal className="w-6 h-6 text-white" />
+                <div className="flex items-center justify-center w-14 h-14 rounded-xl overflow-hidden bg-white/10 shadow-lg shadow-purple-500/30">
+                  <Image 
+                    src="/logo.png" 
+                    alt="Linovia Logo" 
+                    width={56} 
+                    height={56}
+                    className="object-contain p-1"
+                  />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold gradient-text">Linovia</h3>
+                  <h3 className="text-2xl font-bold gradient-text">Linovia</h3>
                   <p className="text-purple-300 text-sm">Master Linux Commands</p>
                 </div>
               </div>
-              <p className="text-purple-200 text-sm leading-relaxed mb-4">
+              <p className="text-purple-200 text-sm leading-relaxed mb-6 max-w-md">
                 Comprehensive Linux command reference, tutorials, and interactive learning platform. 
-                Master Ubuntu and Linux commands with detailed examples and practice exercises on Linovia.
+                Master Ubuntu and Linux commands with detailed examples and practice exercises.
               </p>
-              <div className="flex items-center gap-4">
-                <a
-                  href="https://github.com/linux-commands-pro"
-                  className="flex items-center gap-2 text-purple-300 hover:text-white transition-colors"
-                >
-                  <Github className="w-4 h-4" />
-                  <span className="text-sm">GitHub</span>
-                </a>
-                <a
-                  href="#"
-                  className="flex items-center gap-2 text-purple-300 hover:text-white transition-colors"
-                >
-                  <Star className="w-4 h-4" />
-                  <span className="text-sm">Star this project</span>
-                </a>
+              
+              {/* Social Media Section */}
+              <div className="space-y-3">
+                <h4 className="text-white font-semibold text-sm mb-3">Connect With Us</h4>
+                <div className="flex flex-wrap gap-3">
+                  <a
+                    href="https://github.com/FarhanAlam-Official"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-btn social-btn-github"
+                    title="Follow us on GitHub"
+                  >
+                    <Github className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="https://instagram.com/farhan.alam.01"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-btn social-btn-instagram"
+                    title="Follow us on Instagram"
+                  >
+                    <Instagram className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="https://facebook.com/farhanalam930"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-btn social-btn-facebook"
+                    title="Follow us on Facebook"
+                  >
+                    <Facebook className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="https://linkedin.com/in/farhan-alam-aa56b2309"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-btn social-btn-linkedin"
+                    title="Connect on LinkedIn"
+                  >
+                    <Linkedin className="w-5 h-5" />
+                  </a>
+                </div>
               </div>
             </div>
 
+            {/* Quick Links */}
             <div>
               <h4 className="text-white font-semibold mb-4">Quick Links</h4>
               <div className="space-y-2">
@@ -235,7 +277,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   <Link
                     key={item.path}
                     href={item.path}
-                    className="block text-purple-300 hover:text-white text-sm transition-colors"
+                    className="block text-purple-300 hover:text-white text-sm transition-colors footer-link"
                   >
                     {item.label}
                   </Link>
@@ -243,33 +285,45 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
             </div>
 
+            {/* Resources */}
             <div>
               <h4 className="text-white font-semibold mb-4">Resources</h4>
               <div className="space-y-2">
-                <a href="#" className="block text-purple-300 hover:text-white text-sm transition-colors">
+                <a href="#" className="block text-purple-300 hover:text-white text-sm transition-colors footer-link">
                   Documentation
                 </a>
-                <a href="#" className="block text-purple-300 hover:text-white text-sm transition-colors">
+                <a href="#" className="block text-purple-300 hover:text-white text-sm transition-colors footer-link">
                   API Reference
                 </a>
-                <a href="#" className="block text-purple-300 hover:text-white text-sm transition-colors">
+                <a href="#" className="block text-purple-300 hover:text-white text-sm transition-colors footer-link">
                   Community
                 </a>
-                <a href="#" className="block text-purple-300 hover:text-white text-sm transition-colors">
+                <a href="#" className="block text-purple-300 hover:text-white text-sm transition-colors footer-link">
                   Support
                 </a>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-purple-500/20 pt-6 mt-8">
+          {/* Bottom Section */}
+          <div className="border-t border-purple-500/20 pt-6">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-purple-300 text-sm">
-                © 2024 Linovia. Made with ❤️ by Farhan Alam for the Linux community.
-              </p>
-              <p className="text-purple-400 text-sm">
-                Last updated: November 16, 2024
-              </p>
+              <div className="flex items-center gap-2 text-purple-300 text-sm">
+                <span>© 2024 Linovia. All rights reserved.</span>
+              </div>
+              <div className="flex items-center gap-1 text-purple-300 text-sm">
+                <span>Made with</span>
+                <Heart className="w-4 h-4 text-pink-500 fill-pink-500 animate-pulse" />
+                <span>by</span>
+                <a
+                  href="https://github.com/FarhanAlam-Official"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-200 hover:text-white font-medium transition-colors footer-link"
+                >
+                  Farhan Alam
+                </a>
+              </div>
             </div>
           </div>
         </div>

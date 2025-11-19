@@ -338,7 +338,7 @@ export default function Commands() {
               {naturalLanguageMode && (
                 <div className="flex items-center gap-2 text-sm text-purple-300 bg-purple-500/10 rounded-lg p-3 border border-purple-500/20">
                   <Sparkles className="w-4 h-4 text-purple-400" />
-                  <span>Natural language search is active. Try asking questions like "how to kill a process" or "how to delete a user"</span>
+                  <span>Natural language search is active. Try asking questions like &quot;how to kill a process&quot; or &quot;how to delete a user&quot;</span>
                 </div>
               )}
             </div>
